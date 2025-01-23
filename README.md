@@ -17,8 +17,8 @@ http://localhost:3000/docs
 
 Steps
 
-* Try first call and see results
 * Try second call /api/{name} with value `harry+potter`
+* Try first call and see results
 * try third call to see logs range `ex:`
 
 ## Things to improve
