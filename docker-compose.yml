@@ -1,0 +1,62 @@
+services:
+  one:
+    build:
+      context: .
+      dockerfile: apps/one/Dockerfile
+      target: production
+    container_name: one
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+      - mongo
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+      - REDIS_HOST=redis
+      - MONGO_URI=mongodb://mongo:27017/test
+      - DATABASE_URL=mongodb://mongo:27017
+      - DATABASE_NAME=test 
+    networks:
+      - app-network
+
+  two:
+    build:
+      context: .
+      dockerfile: apps/two/Dockerfile
+      target: production
+    container_name: two
+    ports:
+      - "4000:3000"
+    depends_on:
+      - redis
+      - mongo
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+      - REDIS_HOST=redis
+      - MONGO_URI=mongodb://mongo:27017/test
+      - DATABASE_URL=mongodb://mongo:27017
+      - DATABASE_NAME=test
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - app-network
+    ports:
+      - "6379:6379"
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    networks:
+      - app-network
+    ports:
+      - "27017:27017"
+
+networks:
+  app-network:
+    driver: bridge
