@@ -17,9 +17,9 @@ http://localhost:3000/docs
 
 Steps
 
-* Try second call /api/{name} with value `harry+potter`
-* Try first call and see results
-* try third call to see logs range `ex:`
+* Try first call /api/init/{name} with value `harry+potter`
+* Try second call and see results with filter
+* try third call to see logs range in format `2025-01-22`
 
 ## Things to improve
 
