@@ -14,6 +14,11 @@ WORKDIR /app
 RUN addgroup --system two && \
           adduser --system -G two two
 
+# remove for prod build
+COPY . .
+RUN npm install && \
+    npx nx run-many -t build
+
 COPY dist/apps/two two/
 RUN chown -R two:two .
 
