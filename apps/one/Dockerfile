@@ -14,11 +14,6 @@ WORKDIR /app
 RUN addgroup --system one && \
           adduser --system -G one one
 
-# Remove for prod build
-COPY . .
-RUN npm install && \
-    npx nx run-many -t build
-
 COPY dist/apps/one one/
 RUN chown -R one:one .
 
