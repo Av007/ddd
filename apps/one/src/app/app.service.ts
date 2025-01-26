@@ -1,15 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  ClientProxy,
-} from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { parse } from 'date-fns';
+import { DataDomain } from './data/data.domain';
+import { PaginationType } from './types';
+import { Data } from './data/data.schema';
 import { RequesterProvider } from './requester.provider';
 import { DataRepository } from './data/data.repository';
-import { Data } from './schemas/data.schema';
-import { PaginationType } from './types';
-import { DataDomain } from './data/data.domain';
-import { LogRepository } from './log/log.repository';
-import { Log } from './schemas/log.schema';
+import { Log } from 'libs/log/src/lib/log.entity';
+import { LogService } from 'libs/log/src/lib/log.service';
 
 @Injectable()
 export class AppService {
@@ -17,7 +15,7 @@ export class AppService {
     @Inject('REDIS_SERVICE') private readonly client: ClientProxy,
     private readonly requester: RequesterProvider,
     private readonly dataRepository: DataRepository,
-    private readonly logRepository: LogRepository
+    private readonly logService: LogService
   ) {}
 
   async publishMessage(channel: string, message: string) {
@@ -53,6 +51,6 @@ export class AppService {
     start.setHours(0, 0, 0, 0);
     end.setHours(23, 59, 59, 0);
 
-    return this.logRepository.findByDate(start, end);
+    return this.logService.findByDate(start, end);
   }
 }

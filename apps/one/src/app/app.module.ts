@@ -1,35 +1,42 @@
 import { Module } from '@nestjs/common';
-import {
-  ClientsModule,
-  Transport,
-} from '@nestjs/microservices';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { LogModule } from '@libs/log';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DataModule } from './data/data.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import { RequesterProvider } from './requester.provider';
-import configuration from './config/configuration';
-import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
-    ClientsModule.register([
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('DATABASE_URL'),
+        dbName: configService.get<string>('DATABASE_NAME'),
+      }),
+      inject: [ConfigService],
+    }), 
+    ClientsModule.registerAsync([
       {
         name: 'REDIS_SERVICE',
-        transport: Transport.REDIS,
-        options: {
-          host: configuration().redis.host,
-          port: 6379,
-        }
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.REDIS,
+          options: {
+            host: configService.get<string>('REDIS_HOST'),
+            port: configService.get<number>('REDIS_PORT', 6379),
+          },
+        }),
       },
     ]),
-    MongooseModule.forRoot(configuration().database.url),
     DataModule,
-    LogModule,
-    ConfigModule.forRoot({
-      load: [configuration],
-    }),
+    LogModule
   ],
   controllers: [AppController],
   providers: [AppService, RequesterProvider],

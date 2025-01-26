@@ -1,7 +1,7 @@
-import { Controller, Get, Query, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Data } from './schemas/data.schema';
 import { PaginationType } from './types';
+import { Data } from './data/data.schema';
 
 @Controller()
 export class AppController {

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Log } from '../schemas/log.schema';
+import { Log } from './log.entity';
 
 @Injectable()
-export class LogRepository {
+export class LogService {
   constructor(@InjectModel(Log.name) private dataModel: Model<Log>) {}
 
   async findByDate(startDate: Date, endDate: Date): Promise<Log[]> {
@@ -19,5 +19,10 @@ export class LogRepository {
         },
       })
       .exec();
+  }
+
+  async create(message: string): Promise<Log> {
+    const createdData = new this.dataModel({message});
+    return createdData.save();
   }
 }

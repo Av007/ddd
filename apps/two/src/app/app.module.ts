@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { LogModule } from '@libs/log';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LogModule } from './log/log.module';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({

@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { LogRepository } from './log/log.repository';
+import { LogService } from 'libs/log/src/lib/log.service';
+
 
 @Injectable()
 export class AppService {
-  constructor(private readonly logRepository: LogRepository) {}
+  constructor(private readonly logService: LogService) {}
 
   addLog(message: string): void {
-    this.logRepository.create(message);
+    this.logService.create(message);
   }
 }
