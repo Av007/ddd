@@ -6,9 +6,6 @@ DDD in nest.js
 ## Run
 
 ```sh
-npm i
-npx nx docker-build one
-npx nx docker-build two
 docker compose up
 ```
 
