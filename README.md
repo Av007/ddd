@@ -23,6 +23,5 @@ Steps
 
 ## Things to improve
 
-* DDD naming 
+* DDD naming? 
 * adding interfaces for DDD
-* get rid of redundant apps/two/src/app/log/log.repository.ts
