@@ -1,8 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   ClientProxy,
-  ClientProxyFactory,
-  Transport,
 } from '@nestjs/microservices';
 import { parse } from 'date-fns';
 import { RequesterProvider } from './requester.provider';
