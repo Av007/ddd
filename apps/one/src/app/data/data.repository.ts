@@ -1,20 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Inject, Injectable } from '@nestjs/common';
 import { Data } from './data.schema';
-import { PaginationType } from '../types';
+import { DatabaseService } from 'libs/database/src/lib/database.service';
+import { SearchQueryDto } from '../types';
 
 @Injectable()
 export class DataRepository {
-    constructor(@InjectModel(Data.name) private dataModel: Model<Data>) {}
+    constructor(@Inject() private databaseService: DatabaseService) {}
 
-  async create(createDataDto: Data): Promise<Data> {
-    const createdData = new this.dataModel(createDataDto);
-    return createdData.save();
+  create(createDataDto: Data) {
+    const db = this.databaseService.getDb();
+    db.collection('Datas').insertOne(createDataDto);
   }
 
-  async findAll(filter: Partial<Data>, pagination: PaginationType): Promise<Data[]> {
-    // @see https://mongoosejs.com/docs/guide.html#methods
-    return this.dataModel.find(filter).limit(pagination.limit).skip(pagination.skip).exec();
+  async findAll(filter: Partial<Data>, pagination: SearchQueryDto): Promise<Data[]> {
+    const db = this.databaseService.getDb();
+    return db.collection<Data>('Datas')
+      .find(filter)
+      .limit(pagination.limit)
+      .skip(pagination.skip)
+      .toArray();
   }
 }

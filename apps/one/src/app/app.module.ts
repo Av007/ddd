@@ -5,8 +5,8 @@ import { LogModule } from '@libs/log';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DataModule } from './data/data.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
 import { RequesterProvider } from './requester.provider';
+import { DatabaseModule } from '@libs/database';
 
 @Module({
   imports: [
@@ -14,13 +14,7 @@ import { RequesterProvider } from './requester.provider';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('DATABASE_URL'),
-        dbName: configService.get<string>('DATABASE_NAME'),
-      }),
-      inject: [ConfigService],
-    }), 
+    DatabaseModule,
     ClientsModule.registerAsync([
       {
         name: 'REDIS_SERVICE',

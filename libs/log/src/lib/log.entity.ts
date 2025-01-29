@@ -1,15 +1,12 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { IsString, IsDate, IsOptional } from 'class-validator';
 
-export type LogDocument = HydratedDocument<Log>;
+export type LogDocument = Log;
 
-@Schema()
 export class Log {
-  @Prop()
+  @IsString()
   message: string;
 
-  @Prop({ type: Date, default: Date.now })
-  createdAt: Date;
+  @IsDate()
+  @IsOptional()
+  createdAt?: Date;
 }
-
-export const LogSchema = SchemaFactory.createForClass(Log);

@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { LogService } from './log.service';
-import { Log, LogSchema } from './log.entity';
+import { DatabaseModule } from '@libs/database';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Log.name, schema: LogSchema }])],
+  imports: [DatabaseModule],
   controllers: [],
   providers: [LogService],
   exports: [LogService]

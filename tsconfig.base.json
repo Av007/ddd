@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@libs/database": ["libs/database/src/index.ts"],
       "@libs/log": ["libs/log/src/index.ts"]
     }
   },

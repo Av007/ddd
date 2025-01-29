@@ -2,12 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { parse } from 'date-fns';
 import { DataDomain } from './data/data.domain';
-import { PaginationType } from './types';
 import { Data } from './data/data.schema';
 import { RequesterProvider } from './requester.provider';
 import { DataRepository } from './data/data.repository';
 import { Log } from 'libs/log/src/lib/log.entity';
 import { LogService } from 'libs/log/src/lib/log.service';
+import { SearchQueryDto } from './types';
 
 @Injectable()
 export class AppService {
@@ -40,7 +40,7 @@ export class AppService {
     return 'ok';
   }
 
-  search(filter: Partial<Data>, pagination: PaginationType): Promise<Data[]> {
+  search(filter: Partial<Data>, pagination: SearchQueryDto): Promise<Data[]> {
     return this.dataRepository.findAll(filter, pagination);
   }
 

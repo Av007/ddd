@@ -1,21 +1,17 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { IsString, IsArray, ArrayNotEmpty } from 'class-validator';
 
-export type DataDocument = HydratedDocument<Data>;
-
-@Schema()
 export class Data {
-  @Prop()
+  @IsString()
   id: string;
 
-  @Prop()
+  @IsString()
   title: string;
 
-  @Prop({type: [String]})
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
   authors: string[];
 
-  @Prop()
+  @IsString()
   publisher: string;
 }
-
-export const DataSchema = SchemaFactory.createForClass(Data);
