@@ -25,6 +25,7 @@ export class LogService {
     const db =  this.databaseService.getDb();
     db.collection<Log>('Logs').insertOne({
       message,
+      createdAt: new Date(),
     });
   }
 }
