@@ -1,47 +1,26 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
 import { parse } from 'date-fns';
-import { DataDomain } from './data/data.domain';
-import { Data } from './data/data.schema';
-import { RequesterProvider } from './requester.provider';
-import { DataRepository } from './data/data.repository';
-import { Log } from 'libs/log/src/lib/log.entity';
-import { LogService } from 'libs/log/src/lib/log.service';
-import { SearchQueryDto } from './types';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientKafka } from '@nestjs/microservices';
+import { Data, DataBooks, DataService, SearchQueryDto } from '@libs/data';
+import { Log, LogService } from '@libs/log';
 
 @Injectable()
 export class AppService {
   constructor(
-    @Inject('REDIS_SERVICE') private readonly client: ClientProxy,
-    private readonly requester: RequesterProvider,
-    private readonly dataRepository: DataRepository,
+    @Inject('EVENT_SERVICE') private readonly client: ClientKafka,
+    private readonly dataService: DataService,
     private readonly logService: LogService
   ) {}
 
-  async publishMessage(channel: string, message: string) {
-    await this.client.emit(channel, message);
-    console.log(`Message published to ${channel}: ${message}`);
-  }
-
   async init(name: string) {
-    const response: DataDomain = await this.requester.get({ q: name });
-
-    const data = response.items.map((item) =>
-      this.dataRepository.create({
-        id: item.id,
-        title: item.volumeInfo.title,
-        authors: item.volumeInfo.authors,
-        publisher: item.volumeInfo.publisher,
-      })
-    );
-
-    Promise.all(data);
+    this.client.emit('api.init.book', name);
 
     return 'ok';
   }
 
-  search(filter: Partial<Data>, pagination: SearchQueryDto): Promise<Data[]> {
-    return this.dataRepository.findAll(filter, pagination);
+  async search(filter: Partial<DataBooks>, pagination: SearchQueryDto): Promise<Data[]> {
+    this.client.emit('api.search.book', 'sa');
+    return this.dataService.findAll(filter, pagination);
   }
 
   filterLogs(startDate: string, endDate: string): Promise<Log[]> {

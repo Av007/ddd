@@ -20,7 +20,7 @@ export class RequesterProvider {
     );
   }
 
-  async get<T>(params: {q: string}): Promise<T> {
+  async get<T>(params: {q: string, maxResults: number, startIndex: number}): Promise<T> {
     const {data} = await this.axiosInstance.get<T>('volumes', {params});
 
     return data;

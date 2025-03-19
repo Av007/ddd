@@ -3,10 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LogModule } from '@libs/log';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { DataModule } from './data/data.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RequesterProvider } from './requester.provider';
+import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@libs/database';
+import { DataModule } from '@ddd-workspace/data';
 
 @Module({
   imports: [
@@ -15,24 +14,25 @@ import { DatabaseModule } from '@libs/database';
       envFilePath: '.env',
     }),
     DatabaseModule,
-    ClientsModule.registerAsync([
+    ClientsModule.register([
       {
-        name: 'REDIS_SERVICE',
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.REDIS,
-          options: {
-            host: configService.get<string>('REDIS_HOST'),
-            port: configService.get<number>('REDIS_PORT', 6379),
+        name: 'EVENT_SERVICE',
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            clientId: 'local',
+            brokers: ['kafka:9093'],
           },
-        }),
+          consumer: {
+            groupId: 'test-id',
+          },
+        },
       },
     ]),
     DataModule,
     LogModule
   ],
   controllers: [AppController],
-  providers: [AppService, RequesterProvider],
+  providers: [AppService],
 })
 export class AppModule {}

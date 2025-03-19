@@ -7,8 +7,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { SearchQueryDto } from './types';
-import { Data } from './data/data.schema';
+import { DataBooks, SearchQueryDto } from '@libs/data';
 import { ApiQuery } from '@nestjs/swagger';
 
 @Controller()
@@ -17,8 +16,6 @@ export class AppController {
 
   @Get('/init/:name')
   async init(@Param('name') name: string) {
-    await this.appService.publishMessage('my-channel', 'init handler');
-
     return this.appService.init(name);
   }
 
@@ -38,15 +35,12 @@ export class AppController {
     example: 10,
   })
   @UsePipes(new ValidationPipe({ transform: true }))
-  async search(@Query() query: Partial<Data> & SearchQueryDto) {
-    console.log(query, 'query');
-
+  async search(@Query() query: Partial<DataBooks> & SearchQueryDto) {
+    // eslint-disable-next-line prefer-const
     let { skip, limit, ...queryParams } = query;
 
-    skip = Number(skip) || 0; // Default to 0 if not provided
+    skip = Number(skip) || 0;
     limit = Number(limit) || 10;
-
-    await this.appService.publishMessage('my-channel', 'search handler');
 
     return this.appService.search(queryParams, { skip, limit });
   }

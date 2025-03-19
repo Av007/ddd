@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Log } from './log.entity';
-import { DatabaseService } from 'libs/database/src/lib/database.service';
-import { Db } from 'mongodb';
+import { DatabaseService } from '@libs/database';
 
 @Injectable()
 export class LogService {
