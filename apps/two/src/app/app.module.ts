@@ -3,6 +3,7 @@ import { LogModule } from '@libs/log';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import {DatabaseModule} from '@libs/database';
+import { DataService } from '@libs/data';
 
 @Module({
   imports: [
@@ -10,6 +11,6 @@ import {DatabaseModule} from '@libs/database';
     LogModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DataService],
 })
 export class AppModule {}

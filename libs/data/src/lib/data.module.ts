@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { DataRepository } from './data.repository';
 import {DatabaseModule} from '@libs/database';
+import { DataService } from './data.service';
 
 @Module({
     imports: [DatabaseModule],
-    providers: [DataRepository],
-    exports: [DataRepository]
+    providers: [DataService],
+    exports: [DataService]
 })
 export class DataModule {}

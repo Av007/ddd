@@ -42,8 +42,12 @@ services:
       - app-network
 
   redis:
-    image: redis:alpine
+    image: redis/redis-stack:latest
     container_name: redis
+    # command: >
+    #   redis-server --loadmodule /usr/lib/redis/modules/redistimeseries.so
+    #   --stop-writes-on-bgsave-error no
+    #   --rdbcompression no
     networks:
       - app-network
     ports:

@@ -1,47 +1,34 @@
+import { parse } from 'date-fns';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { parse } from 'date-fns';
-import { DataDomain } from './data/data.domain';
-import { Data } from './data/data.schema';
+import { Log, LogService } from '@libs/log';
+import {Data, DataEntity, DataService, SearchQueryDto} from '@libs/data';
 import { RequesterProvider } from './requester.provider';
-import { DataRepository } from './data/data.repository';
-import { Log } from 'libs/log/src/lib/log.entity';
-import { LogService } from 'libs/log/src/lib/log.service';
-import { SearchQueryDto } from './types';
 
 @Injectable()
 export class AppService {
   constructor(
     @Inject('REDIS_SERVICE') private readonly client: ClientProxy,
     private readonly requester: RequesterProvider,
-    private readonly dataRepository: DataRepository,
+    private readonly dataService: DataService,
     private readonly logService: LogService
   ) {}
 
   async publishMessage(channel: string, message: string) {
-    await this.client.emit(channel, message);
+    this.client.emit(channel, message);
     console.log(`Message published to ${channel}: ${message}`);
   }
 
   async init(name: string) {
-    const response: DataDomain = await this.requester.get({ q: name });
+    const response = await this.requester.get<DataEntity>({ q: name });
 
-    const data = response.items.map((item) =>
-      this.dataRepository.create({
-        id: item.id,
-        title: item.volumeInfo.title,
-        authors: item.volumeInfo.authors,
-        publisher: item.volumeInfo.publisher,
-      })
-    );
-
-    Promise.all(data);
-
+    this.client.emit('saving', response);
+    console.log(`Message saving to`);
     return 'ok';
   }
 
   search(filter: Partial<Data>, pagination: SearchQueryDto): Promise<Data[]> {
-    return this.dataRepository.findAll(filter, pagination);
+    return this.dataService.findAll(filter, pagination);
   }
 
   filterLogs(startDate: string, endDate: string): Promise<Log[]> {

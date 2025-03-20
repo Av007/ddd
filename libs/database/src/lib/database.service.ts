@@ -26,7 +26,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     this.db = this.client.db(dbName);
   }
 
-  getDb(): Db | null {
+  getDb(): Db {
+    if (!this.db) {
+      throw new Error('database must be initialized');
+    }
     return this.db;
   }
 

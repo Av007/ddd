@@ -1,12 +1,12 @@
 # Stage 1: Dependencies installation
-FROM docker.io/node:lts-alpine as deps
+FROM docker.io/node:lts-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 RUN npm install --only=production
 
 # Stage 2: Build
-FROM docker.io/node:lts-alpine as builder
+FROM docker.io/node:lts-alpine AS builder
 WORKDIR /usr/src/app
 
 # Copy package files and install all dependencies, including devDependencies
@@ -18,7 +18,7 @@ RUN npx nx run-many -t build
 
 
 # Stage 3: Production
-FROM docker.io/node:lts-alpine as production
+FROM docker.io/node:lts-alpine AS production
 RUN apk add --no-cache dumb-init
 
 ENV NODE_ENV production

@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Data } from './data.schema';
-import { DatabaseService } from 'libs/database/src/lib/database.service';
-import { SearchQueryDto } from '../types';
+import { DatabaseService } from '@libs/database';
+import { Data } from './data.entity';
+import { SearchQueryDto } from './data.types';
 
 @Injectable()
-export class DataRepository {
+export class DataService {
     constructor(@Inject() private databaseService: DatabaseService) {}
 
   create(createDataDto: Data) {
@@ -16,8 +16,8 @@ export class DataRepository {
     const db = this.databaseService.getDb();
     return db.collection<Data>('Datas')
       .find(filter)
-      .limit(pagination.limit)
-      .skip(pagination.skip)
+      .limit(pagination?.limit || 10)
+      .skip(pagination?.skip || 0)
       .toArray();
   }
 }

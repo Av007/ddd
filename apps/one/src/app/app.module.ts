@@ -1,12 +1,14 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LogModule } from '@libs/log';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { DataModule } from './data/data.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RequesterProvider } from './requester.provider';
 import { DatabaseModule } from '@libs/database';
+import { ApiTimingMiddleware } from './apiTiming.middleware';
+import { DataModule } from '@libs/data';
+import Redis from 'ioredis';
 
 @Module({
   imports: [
@@ -33,6 +35,23 @@ import { DatabaseModule } from '@libs/database';
     LogModule
   ],
   controllers: [AppController],
-  providers: [AppService, RequesterProvider],
+  providers: [AppService, RequesterProvider,
+    {
+      provide: 'REDIS_CLIENT',
+      useFactory: (configService: ConfigService) => {
+        return new Redis({
+          host: configService.get<string>('REDIS_HOST', 'localhost'),
+          port: configService.get<number>('REDIS_PORT', 6379),
+          retryStrategy: (times) => Math.min(times * 50, 2000),
+        });
+      },
+      inject: [ConfigService],
+    },
+    ApiTimingMiddleware,
+  ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ApiTimingMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}
